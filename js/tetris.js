@@ -88,6 +88,24 @@ function seizeBlock(){
         moving.classList.remove("moving");
         moving.classList.add("seized");
     })
+    checkMatch();
+}
+
+function checkMatch(){
+    const childNodes = playground.childNodes;
+    childNodes.forEach(child=>{
+        let matched = true;
+        child.children[0].childNodes.forEach(li=>{
+            if(!li.classList.contains("seized")){
+                matched = false;
+            }
+        })
+        if(matched){
+            child.remove();
+            prependNewLine();
+        }
+    })
+
     generateNewBlock();
 }
 
