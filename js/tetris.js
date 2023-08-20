@@ -1,3 +1,5 @@
+import BLOCKS from "./blocks.js";
+
 //DOM
 const playground = document.querySelector(".playground>ul");
 
@@ -11,22 +13,13 @@ let duration = 500;
 let dounInterval;
 let tempMovingItem;
 
-const BLOCKS = {
-    tree : [
-        [[2,1],[0,1],[1,0],[1,1]],
-        [[1,2],[0,1],[1,0],[1,1]],
-        [[1,2],[0,1],[2,1],[1,1]],
-        [[2,1],[1,2],[1,0],[1,1]],
-       
-    ]
-}
 
 
 const movingItem ={
-    type : "tree",
+    type : "",
     direction: 0,
     top : 0,
-    left : 0,
+    left : 3,
 
 };
 
@@ -35,12 +28,14 @@ init();
 
 //functions
 function init(){
+   
+
     tempMovingItem = {...movingItem };
 
     for(let i=0;i<GAME_ROWS;i++){
         prependNewLine();
     }
-    renderBlocks();
+    generateNewBlock();
 }
 
 
@@ -93,6 +88,27 @@ function seizeBlock(){
         moving.classList.remove("moving");
         moving.classList.add("seized");
     })
+    generateNewBlock();
+}
+
+function generateNewBlock(){
+    clearInterval(dounInterval);
+    dounInterval = setInterval(()=>{
+        moveBlock("top",1)
+    },duration)
+
+
+
+    const blockArray = Object.entries(BLOCKS);
+    const randomIndex =  Math.floor(Math.random()*blockArray.length);
+    movingItem.type=blockArray[randomIndex][0]
+    movingItem.top = 0;
+    movingItem.left = 3;
+    movingItem.direction = 0;
+    tempMovingItem = {...movingItem}
+    renderBlocks();
+
+
 }
 
 
