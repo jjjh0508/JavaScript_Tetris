@@ -14,9 +14,10 @@ let tempMovingItem;
 const BLOCKS = {
     tree : [
         [[2,1],[0,1],[1,0],[1,1]],
-        [],
-        [],
-        [],
+        [[1,2],[0,1],[1,0],[1,1]],
+        [[1,2],[0,1],[2,1],[1,1]],
+        [[2,1],[1,2],[1,0],[1,1]],
+       
     ]
 }
 
@@ -25,7 +26,7 @@ const movingItem ={
     type : "tree",
     direction: 0,
     top : 0,
-    left : 3,
+    left : 0,
 
 };
 
@@ -57,13 +58,13 @@ function prependNewLine(){
 };
 
 
-function renderBlocks(){
+function renderBlocks(moveType=""){
     const { type, direction, top, left } =tempMovingItem;
     const moveBlocks= document.querySelectorAll(".moving");
     moveBlocks.forEach(moving=>{
-        moving.classList.remove(type,"moving")
+        moving.classList.remove(type,"moving");
     })
-    BLOCKS[type][direction].forEach(block => {
+    BLOCKS[type][direction].some(block => {
         const x = block[0]+left;
         const y = block[1]+top;
         const target = playground.childNodes[y] ? playground.childNodes[y].childNodes[0].childNodes[x]: null;
@@ -74,15 +75,29 @@ function renderBlocks(){
             tempMovingItem = {...movingItem }
             setTimeout(()=>{
                 renderBlocks();
+                if(moveType==="top"){
+                    seizeBlock();
+                }
             },0)
+            return true;
         }
     });
     movingItem.left =left;
     movingItem.top =top;
     movingItem.direction =direction;
 }
+
+function seizeBlock(){
+    const moveBlocks= document.querySelectorAll(".moving");
+    moveBlocks.forEach(moving=>{
+        moving.classList.remove("moving");
+        moving.classList.add("seized");
+    })
+}
+
+
 function checkEmpty(target){
-    if(!target){
+    if(!target || target.classList.contains("seized")){
         return false;
     }
     return true;   
@@ -90,9 +105,14 @@ function checkEmpty(target){
 
 function moveBlock(moveType,amount){
     tempMovingItem[moveType] += amount;
-    renderBlocks();
+    renderBlocks(moveType);
 }
 
+function chageDirection(){
+    const direction =  tempMovingItem.direction;
+   direction === 3 ? tempMovingItem.direction = 0 : tempMovingItem.direction +=1;
+    renderBlocks();
+}
 
 // event handling
 document.addEventListener("keydown",e=>{
@@ -105,6 +125,9 @@ document.addEventListener("keydown",e=>{
             break;
         case 40:
             moveBlock("top",1)
+            break;
+        case 38:
+            chageDirection();
             break;
         default:
             break;
